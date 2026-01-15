@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Menu - Warung Cireng Munu'u</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -130,24 +131,58 @@
                                         <h5 class="modal-title">💬 Pesan {{ $c->nama_menu }}</h5>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                     </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label for="pesan_{{ $c->id }}" class="form-label">Pesan Anda:</label>
-                                            <textarea class="form-control" id="pesan_{{ $c->id }}" rows="4" placeholder="Tuliskan pesan Anda...">Halo, saya ingin memesan {{ $c->nama_menu }} seharga Rp {{ number_format($c->harga, 0, ',', '.') }}</textarea>
+                                    <form action="{{ route('orders.store') }}" method="POST" onsubmit="return submitOrder(event, '{{ $c->id }}', '{{ $c->link_wa }}')">
+                                        @csrf
+                                        <div class="modal-body">
+                                            <input type="hidden" name="cireng_id" value="{{ $c->id }}">
+                                            
+                                            <div class="mb-3">
+                                                <label for="nama_pelanggan_{{ $c->id }}" class="form-label">📝 Nama Anda</label>
+                                                <input type="text" class="form-control" id="nama_pelanggan_{{ $c->id }}" name="nama_pelanggan" placeholder="Contoh: Budi Santoso" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="quantity_{{ $c->id }}" class="form-label">🔢 Jumlah Pesan</label>
+                                                <input type="number" class="form-control" id="quantity_{{ $c->id }}" name="quantity" value="1" min="1" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="pesan_{{ $c->id }}" class="form-label">💬 Pesan Tambahan (Opsional)</label>
+                                                <textarea class="form-control" id="pesan_{{ $c->id }}" rows="3" name="pesan_tambahan" placeholder="Catatan atau permintaan khusus..."></textarea>
+                                            </div>
+
+                                            <div class="alert alert-info small">
+                                                <strong>ℹ️ Info:</strong> Pesanan Anda akan disimpan dan dikirim ke WhatsApp
+                                            </div>
+
+                                            <div class="alert alert-warning small">
+                                                <strong>💰 Total:</strong> Rp <span id="total_{{ $c->id }}">{{ number_format($c->harga, 0, ',', '.') }}</span>
+                                            </div>
                                         </div>
-                                        <div class="alert alert-info small">
-                                            <strong>📝 Tips:</strong> Customize pesan sesuai kebutuhan Anda sebelum mengirim
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                            <button type="submit" class="btn btn-success">
+                                                💬 Pesan Sekarang
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <button type="button" class="btn btn-success" onclick="pesanWhatsApp('{{ $c->link_wa }}', document.getElementById('pesan_{{ $c->id }}').value)">
-                                            💬 Kirim ke WhatsApp
-                                        </button>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
+
+                        <script>
+                            // Update total harga saat quantity berubah
+                            const quantityInput{{ $c->id }} = document.getElementById('quantity_{{ $c->id }}');
+                            const updateTotal{{ $c->id }} = function() {
+                                const harga = {{ $c->harga }};
+                                const qty = parseInt(this.value) || 1;
+                                const total = harga * qty;
+                                document.getElementById('total_{{ $c->id }}').textContent = new Intl.NumberFormat('id-ID').format(total);
+                            };
+                            
+                            quantityInput{{ $c->id }}.addEventListener('change', updateTotal{{ $c->id }});
+                            quantityInput{{ $c->id }}.addEventListener('input', updateTotal{{ $c->id }});
+                        </script>
                     @endforeach
                 @else
                     <!-- DEMO CARDS -->
@@ -204,18 +239,97 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function pesanWhatsApp(whatsappLink, pesan) {
-            // Extract phone number dari WhatsApp link
-            const phoneNumber = whatsappLink.replace('https://wa.me/', '').split('?')[0];
+        function submitOrder(event, cirengId, whatsappLink) {
+            event.preventDefault();
             
-            // Encode pesan
-            const encodedPesan = encodeURIComponent(pesan);
+            // Get form values
+            const nama = document.getElementById(`nama_pelanggan_${cirengId}`).value;
+            const quantity = document.getElementById(`quantity_${cirengId}`).value;
+            const pesan = document.getElementById(`pesan_${cirengId}`).value;
+            const form = event.target;
             
-            // Buat URL WhatsApp dengan pesan
-            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedPesan}`;
+            // Validate
+            if (!nama || !quantity) {
+                alert('Mohon isi nama dan jumlah pesanan!');
+                return false;
+            }
             
-            // Buka di tab baru
-            window.open(whatsappUrl, '_blank');
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            const token = csrfToken ? csrfToken.getAttribute('content') : document.querySelector('input[name="_token"]').value;
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('_token', token);
+            formData.append('cireng_id', cirengId);
+            formData.append('nama_pelanggan', nama);
+            formData.append('quantity', quantity);
+            formData.append('pesan_tambahan', pesan);
+            
+            // Submit to server
+            fetch('{{ route("orders.store") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Build WhatsApp message
+                    let message = `Halo, saya ${nama}\n\n`;
+                    message += `Saya ingin memesan:\n`;
+                    message += `📦 Produk: ${data.nama_produk}\n`;
+                    message += `🔢 Jumlah: ${quantity} porsi\n`;
+                    message += `💰 Total: Rp ${data.total_harga_format}\n`;
+                    
+                    if (pesan && pesan.trim()) {
+                        message += `\n📝 Catatan: ${pesan}`;
+                    }
+                    
+                    message += `\n\nTerima kasih! 🙏`;
+                    
+                    // Extract phone number from WhatsApp link
+                    const phoneNumber = whatsappLink.replace('https://wa.me/', '').split('?')[0];
+                    const encodedMessage = encodeURIComponent(message);
+                    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+                    
+                    // Close modal
+                    const modalElement = document.getElementById(`pesanModal${cirengId}`);
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    }
+                    
+                    // Show success alert
+                    alert('✅ Pesanan berhasil! WhatsApp akan terbuka...');
+                    
+                    // Open WhatsApp
+                    setTimeout(() => {
+                        window.open(whatsappUrl, '_blank');
+                    }, 500);
+                    
+                    // Reset form
+                    form.reset();
+                    document.getElementById(`quantity_${cirengId}`).value = '1';
+                    document.getElementById(`total_${cirengId}`).textContent = new Intl.NumberFormat('id-ID').format({{ $c->harga ?? 0 }});
+                } else {
+                    alert('❌ Gagal memproses pesanan: ' + (data.message || 'Error tidak diketahui'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ Terjadi kesalahan: ' + error.message + '\nMohon coba lagi');
+            });
+            
+            return false;
         }
     </script>
 </body>

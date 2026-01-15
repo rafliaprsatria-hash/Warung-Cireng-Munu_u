@@ -90,8 +90,9 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('menu') }}">🍴 Cireng Munu'u - Admin</a>
+            <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">🍴 Cireng Munu'u - Admin</a>
             <div class="ms-auto">
+                <a href="{{ route('dashboard') }}" class="btn btn-outline-light btn-sm me-2">📊 Dashboard</a>
                 <a href="{{ route('menu') }}" class="btn btn-outline-light btn-sm me-2">Lihat Menu</a>
                 <a href="/" class="btn btn-outline-light btn-sm me-2">Home</a>
                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">

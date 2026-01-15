@@ -8,6 +8,29 @@ use Illuminate\Http\Request;
 
 class CirengController extends Controller
 {
+    public function dashboard()
+    {
+        $cirengs = Cireng::all();
+        $orders = \App\Models\Order::orderBy('created_at', 'desc')->limit(5)->get();
+        
+        // Hitung statistik
+        $totalMenu = $cirengs->count();
+        $totalRevenue = $cirengs->sum('harga');
+        $averagePrice = $totalMenu > 0 ? $totalRevenue / $totalMenu : 0;
+        $totalStok = $cirengs->sum('stok');
+        $totalOrders = \App\Models\Order::count();
+        
+        // Data untuk kategori chart
+        $categoryData = [
+            'labels' => $cirengs->groupBy('kategori')->keys()->toArray(),
+            'data' => $cirengs->groupBy('kategori')->map(function($items) {
+                return $items->count();
+            })->values()->toArray()
+        ];
+        
+        return view('dashboard', compact('cirengs', 'orders', 'totalMenu', 'totalRevenue', 'averagePrice', 'totalStok', 'totalOrders', 'categoryData'));
+    }
+
     public function index()
     {
         $cirengs = \App\Models\Cireng::all();

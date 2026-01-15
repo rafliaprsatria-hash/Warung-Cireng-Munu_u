@@ -26,7 +26,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">Cireng Munu'u</a>
             <div class="ms-auto">
-                <a href="{{ route('cireng.index') }}" class="btn btn-outline-light btn-sm">Admin Dashboard</a>
+                <a href="{{ route('dashboard') }}" class="btn btn-outline-light btn-sm">Admin Dashboard</a>
             </div>
         </div>
     </nav>
@@ -38,34 +38,6 @@
             <a href="{{ route('menu') }}" class="btn btn-warning btn-lg fw-bold mt-3">Lihat Menu</a>
         </div>
     </header>
-
-    <section id="menu" class="py-5">
-        <div class="container">
-            <h2 class="text-center fw-bold mb-5">Pilihan Menu Favorit</h2>
-            <div class="row">
-                @foreach($cirengs as $c)
-                @if($cirengs->isEmpty())
-    <p class="text-center">Maaf, menu cireng belum tersedia.</p>
-@else
-    @foreach($cirengs as $c)
-        {{-- Kode kartu menu Anda --}}
-    @endforeach
-@endif
-                <div class="col-md-4 mb-4">
-                    <div class="card card-cireng shadow">
-                        <img src="https://via.placeholder.com/300x200?text=Cireng+Munuu" class="card-img-top" alt="Cireng">
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">{{ $c->nama_menu }}</h5>
-                            <p class="text-muted small">Stok tersedia: {{ $c->stok }}</p>
-                            <h4 class="text-danger fw-bold">Rp {{ number_format($c->harga) }}</h4>
-                            <button class="btn btn-danger w-100 btn-pesan">Pesan Sekarang</button>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
 
     <footer class="bg-dark text-white py-4 mt-5 text-center">
         <p>&copy; 2024 Warung Cireng Munu'u - Pemrograman 1 Tugas Besar</p>
