@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\CirengController;
+use App\Models\Cireng;
 
 // Halaman utama (Landing Page)
 Route::get('/', function () {
-    return view('landing');
+    $cirengs = Cireng::all();
+    return view('landing', compact('cirengs'));
 });
 
+// Halaman Menu
+Route::get('/menu', [CirengController::class, 'menu'])->name('menu');
 // Halaman Dashboard Admin (Backend)
 Route::prefix('dashboard')->group(function () {
     Route::get('/', [CirengController::class, 'index'])->name('cireng.index');

@@ -9,13 +9,19 @@ use Illuminate\Http\Request;
 class CirengController extends Controller
 {
     public function index()
-{
-    $cirengs = \App\Models\Cireng::all();
-    $pembelis = \App\Models\Pembeli::all(); 
+    {
+        $cirengs = \App\Models\Cireng::all();
+        $pembelis = \App\Models\Pembeli::all(); 
 
-    // Pastikan nama 'index' di bawah ini sesuai dengan nama file index.blade.php
-    return view('index', compact('cirengs', 'pembelis'));
-}
+        // Pastikan nama 'index' di bawah ini sesuai dengan nama file index.blade.php
+        return view('index', compact('cirengs', 'pembelis'));
+    }
+
+    public function menu()
+    {
+        $cirengs = Cireng::all();
+        return view('menu', compact('cirengs'));
+    }
    public function store(Request $request)
 {
     $request->validate([
