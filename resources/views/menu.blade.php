@@ -100,7 +100,7 @@
                         <div class="col-md-4 mb-4">
                             <div class="card card-cireng h-100">
                                 <!-- Gambar -->
-                                <img src="https://via.placeholder.com/400x250?text=Cireng+{{ urlencode($c->nama_menu) }}" class="card-img-top" alt="{{ $c->nama_menu }}">
+                                <img src="{{ $c->link_img ?? 'https://via.placeholder.com/400x250?text=Cireng' }}" class="card-img-top" alt="{{ $c->nama_menu }}">
 
                                 <!-- Card Body -->
                                 <div class="card-body d-flex flex-column">
@@ -108,20 +108,43 @@
 
                                     <!-- Deskripsi -->
                                     <p class="card-text">
-                                        @if(isset($c->deskripsi) && !empty($c->deskripsi))
-                                            {{ $c->deskripsi }}
-                                        @else
-                                            Cireng pilihan kami dengan cita rasa yang luar biasa nikmat. Dibuat dengan bahan berkualitas tinggi dan bumbu rahasia yang rahasia!
-                                        @endif
+                                        {{ $c->deskripsi ?? 'Cireng pilihan kami dengan cita rasa yang luar biasa nikmat. Dibuat dengan bahan berkualitas tinggi dan bumbu rahasia yang rahasia!' }}
                                     </p>
 
                                     <!-- Harga -->
                                     <div class="price">Rp {{ number_format($c->harga, 0, ',', '.') }}</div>
 
                                     <!-- Tombol Pesan -->
-                                    <button class="btn btn-pesan btn-danger w-100 mt-auto">
+                                    <button type="button" class="btn btn-pesan btn-danger w-100 mt-auto" data-bs-toggle="modal" data-bs-target="#pesanModal{{ $c->id }}">
                                         🛒 Pesan Sekarang
                                     </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MODAL PESAN -->
+                        <div class="modal fade" id="pesanModal{{ $c->id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-success text-white">
+                                        <h5 class="modal-title">💬 Pesan {{ $c->nama_menu }}</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="pesan_{{ $c->id }}" class="form-label">Pesan Anda:</label>
+                                            <textarea class="form-control" id="pesan_{{ $c->id }}" rows="4" placeholder="Tuliskan pesan Anda...">Halo, saya ingin memesan {{ $c->nama_menu }} seharga Rp {{ number_format($c->harga, 0, ',', '.') }}</textarea>
+                                        </div>
+                                        <div class="alert alert-info small">
+                                            <strong>📝 Tips:</strong> Customize pesan sesuai kebutuhan Anda sebelum mengirim
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                        <button type="button" class="btn btn-success" onclick="pesanWhatsApp('{{ $c->link_wa }}', document.getElementById('pesan_{{ $c->id }}').value)">
+                                            💬 Kirim ke WhatsApp
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -180,5 +203,20 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function pesanWhatsApp(whatsappLink, pesan) {
+            // Extract phone number dari WhatsApp link
+            const phoneNumber = whatsappLink.replace('https://wa.me/', '').split('?')[0];
+            
+            // Encode pesan
+            const encodedPesan = encodeURIComponent(pesan);
+            
+            // Buat URL WhatsApp dengan pesan
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedPesan}`;
+            
+            // Buka di tab baru
+            window.open(whatsappUrl, '_blank');
+        }
+    </script>
 </body>
 </html>

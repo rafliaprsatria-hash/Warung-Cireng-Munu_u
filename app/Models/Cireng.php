@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cireng extends Model
 {
-    protected $fillable = ['nama_menu', 'harga', 'stok', 'kategori'];
+    protected $fillable = ['nama_menu', 'harga', 'stok', 'kategori', 'deskripsi', 'link_wa', 'link_img'];
 }

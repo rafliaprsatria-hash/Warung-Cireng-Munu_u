@@ -93,7 +93,11 @@
             <a class="navbar-brand fw-bold" href="{{ route('menu') }}">🍴 Cireng Munu'u - Admin</a>
             <div class="ms-auto">
                 <a href="{{ route('menu') }}" class="btn btn-outline-light btn-sm me-2">Lihat Menu</a>
-                <a href="/" class="btn btn-outline-light btn-sm">Home</a>
+                <a href="/" class="btn btn-outline-light btn-sm me-2">Home</a>
+                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm">🚪 Logout</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -114,6 +118,10 @@
                 @csrf
                 <div class="row">
                     <div class="col-md-6 mb-3">
+                        <label for="nama_menu" class="form-label">Nama Menu</label>
+                        <input type="text" class="form-control" id="nama_menu" name="nama_menu" placeholder="Contoh: Cireng Isi Ayam" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
                         <label for="harga" class="form-label">Harga (Rp)</label>
                         <input type="number" class="form-control" id="harga" name="harga" placeholder="12000" required>
                     </div>
@@ -121,7 +129,7 @@
                         <label for="link_wa" class="form-label">Link WhatsApp</label>
                         <input type="url" class="form-control" id="link_wa" name="link_wa" placeholder="https://wa.me/62123456789" required>
                     </div>
-                    <div class="col-12 mb-3">
+                    <div class="col-md-6 mb-3">
                         <label for="link_img" class="form-label">Link Gambar</label>
                         <input type="url" class="form-control" id="link_img" name="link_img" placeholder="https://example.com/image.jpg" required>
                     </div>
@@ -187,6 +195,10 @@
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="edit_nama_{{ $c->id }}" class="form-label">Nama Menu</label>
+                                            <input type="text" class="form-control" id="edit_nama_{{ $c->id }}" name="nama_menu" value="{{ $c->nama_menu }}" required>
+                                        </div>
                                         <div class="mb-3">
                                             <label for="edit_harga_{{ $c->id }}" class="form-label">Harga (Rp)</label>
                                             <input type="number" class="form-control" id="edit_harga_{{ $c->id }}" name="harga" value="{{ $c->harga }}" required>

@@ -25,13 +25,18 @@ class CirengController extends Controller
    public function store(Request $request)
 {
     $request->validate([
-        'nama_menu' => 'required',
+        'nama_menu' => 'required|string|max:255',
         'harga' => 'required|numeric',
-        'stok' => 'required|numeric',
+        'link_wa' => 'required|url',
+        'link_img' => 'required|url',
+        'deskripsi' => 'required|string',
     ]);
 
-    // Mengambil data dari form dan simpan ke database
-    \App\Models\Cireng::create($request->all());
+    $data = $request->all();
+    $data['stok'] = $request->input('stok', 0); // Default stok = 0
+    $data['kategori'] = $request->input('kategori', 'Snack'); // Default kategori
+    
+    \App\Models\Cireng::create($data);
 
     return redirect()->route('cireng.index')->with('success', 'Menu Cireng Berhasil Ditambah!');
 }
@@ -40,9 +45,10 @@ class CirengController extends Controller
     {
         $request->validate([
             'nama_menu' => 'required|string|max:255',
-            'harga' => 'required|integer|min:0',
-            'stok' => 'required|integer|min:0',
-            'kategori' => 'required|string|max:255',
+            'harga' => 'required|numeric',
+            'link_wa' => 'required|url',
+            'link_img' => 'required|url',
+            'deskripsi' => 'required|string',
         ]);
 
         $cireng = Cireng::findOrFail($id);
