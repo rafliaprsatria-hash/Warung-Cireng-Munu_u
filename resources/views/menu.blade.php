@@ -9,7 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
-        .navbar { background-color: #dc3545 !important; }
+        .bg-cream { background-color: #f5f5dc !important; }
+        .text-dark-cream { color: #333 !important; }
+        .navbar { background-color: #f5f5dc !important; }
         .card-cireng {
             transition: transform 0.3s, box-shadow 0.3s;
             border: none;
@@ -41,24 +43,25 @@
         }
         .price {
             font-size: 1.8rem;
-            color: #dc3545;
+            color: #ffc107;
             font-weight: 700;
             margin: 1rem 0;
         }
         .btn-pesan {
-            background-color: #dc3545;
+            background-color: #ffc107;
             border: none;
             padding: 0.75rem;
             font-weight: 600;
             transition: background-color 0.3s;
+            color: #333;
         }
         .btn-pesan:hover {
-            background-color: #c82333;
-            color: white;
+            background-color: #e6a800;
+            color: #333;
         }
         .page-header {
-            background: linear-gradient(135deg, #dc3545 0%, #ff6b6b 100%);
-            color: white;
+            background: linear-gradient(135deg, #ffc107 0%, #ffdb58 100%);
+            color: #333;
             padding: 2rem 0;
             margin-bottom: 3rem;
             text-align: center;
@@ -76,12 +79,12 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-cream sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('menu') }}">🍴 Cireng Munu'u</a>
+            <a class="navbar-brand fw-bold text-dark-cream" href="{{ route('menu') }}">Cireng Munu'u</a>
             <div class="ms-auto">
-                <a href="/" class="btn btn-outline-light btn-sm me-2">Kembali Home</a>
-                <a href="{{ route('cireng.index') }}" class="btn btn-outline-light btn-sm">Admin Dashboard</a>
+                <a href="/" class="btn btn-outline-dark btn-sm me-2">Kembali Home</a>
+                <a href="{{ route('cireng.index') }}" class="btn btn-outline-dark btn-sm">Admin Dashboard</a>
             </div>
         </div>
     </nav>
@@ -127,9 +130,9 @@
                         <div class="modal fade" id="pesanModal{{ $c->id }}" tabindex="-1">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modal-header bg-success text-white">
-                                        <h5 class="modal-title">💬 Pesan {{ $c->nama_menu }}</h5>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    <div class="modal-header bg-warning">
+                                        <h5 class="modal-title text-dark">💬 Pesan {{ $c->nama_menu }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <form action="{{ route('orders.store') }}" method="POST" onsubmit="return submitOrder(event, '{{ $c->id }}', '{{ $c->link_wa }}')">
                                         @csrf
@@ -161,7 +164,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                            <button type="submit" class="btn btn-success">
+                                            <button type="submit" class="btn btn-warning text-dark fw-bold">
                                                 💬 Pesan Sekarang
                                             </button>
                                         </div>
@@ -230,9 +233,9 @@
         </div>
     </section>
 
-    <footer class="bg-dark text-white py-4 mt-5 text-center">
+    <footer class="bg-cream py-4 mt-5 text-center">
         <div class="container">
-            <p class="mb-0">&copy; 2024 Warung Cireng Munu'u - Pemrograman 1 Tugas Besar</p>
+            <p class="mb-0 text-dark-cream">&copy; Warung Cireng Munu'u</p>
             <p class="text-secondary mt-2">Renyah & Gurih! 🔥</p>
         </div>
     </footer>

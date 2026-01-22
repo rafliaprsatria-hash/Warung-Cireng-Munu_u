@@ -167,7 +167,7 @@
                     <div class="info-box-icon">📦</div>
                     <div class="info-box-content">
                         <span class="info-box-text">Produk Terjual</span>
-                        <span class="info-box-number">{{ $totalMenu }}</span>
+                        <span class="info-box-number">{{ $totalProdukTerjual ?? 0 }}</span>
                     </div>
                 </div>
             </div>

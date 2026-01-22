@@ -19,6 +19,7 @@ class CirengController extends Controller
         $averagePrice = $totalMenu > 0 ? $totalRevenue / $totalMenu : 0;
         $totalStok = $cirengs->sum('stok');
         $totalOrders = \App\Models\Order::count();
+        $totalProdukTerjual = \App\Models\Order::sum('quantity'); // Total quantity dari semua pesanan
         
         // Data untuk kategori chart
         $categoryData = [
@@ -28,7 +29,7 @@ class CirengController extends Controller
             })->values()->toArray()
         ];
         
-        return view('dashboard', compact('cirengs', 'orders', 'totalMenu', 'totalRevenue', 'averagePrice', 'totalStok', 'totalOrders', 'categoryData'));
+        return view('dashboard', compact('cirengs', 'orders', 'totalMenu', 'totalRevenue', 'averagePrice', 'totalStok', 'totalOrders', 'totalProdukTerjual', 'categoryData'));
     }
 
     public function index()
@@ -66,7 +67,7 @@ class CirengController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_menu' => 'required|string|max:255',
             'harga' => 'required|numeric',
             'link_wa' => 'required|url',
@@ -75,7 +76,7 @@ class CirengController extends Controller
         ]);
 
         $cireng = Cireng::findOrFail($id);
-        $cireng->update($request->all());
+        $cireng->update($validated);
 
         return redirect()->back()->with('success', 'Menu Cireng berhasil diupdate!');
     }
